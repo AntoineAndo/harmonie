@@ -18,8 +18,6 @@ def play_music(music_file):
     while pygame.mixer.music.get_busy():
         clock.tick(30)
 
-
-def generate_population:
 notes = []
 trackLength = 0
 dictRatio = {}
@@ -37,7 +35,7 @@ print("TEMPO")
 print(mido.tempo2bpm(400000))
 track.append(MetaMessage('set_tempo', tempo=350000))
 
-fileList = ["dragonforce.mid"]
+fileList = ["music/dragonforce.mid"]
 
 for file in fileList:
     mid = MidiFile(file)
