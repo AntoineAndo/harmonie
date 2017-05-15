@@ -28,14 +28,28 @@ durationList = []
 durationRatio = {}
 durationHit = {}
 
+
+'''
+0=piano
+10=carillon
+5=guitar ?
+6=harp ?
+7=
+125=vocalist
+'''
+
+
 newMidi = MidiFile()
 track = MidiTrack()
+print(instrument)
+track.append(Message('program_change', program=30))
 newMidi.tracks.append(track)
+tempo = 450000
 print("TEMPO")
-print(mido.tempo2bpm(400000))
-track.append(MetaMessage('set_tempo', tempo=350000))
+print(mido.tempo2bpm(tempo))
+track.append(MetaMessage('set_tempo', tempo=tempo))
 
-fileList = ["music/dragonforce.mid"]
+fileList = ["music/animal.mid"]
 
 for file in fileList:
     mid = MidiFile(file)
@@ -54,7 +68,7 @@ for file in fileList:
             try:
                 durationRatio[durationList[i][0]][durationList[i][1]] = 1
             except KeyError:
-                durationRatio[durationList[i][0]] = {};
+                durationRatio[durationList[i][0]] = {}
                 durationHit[durationList[i][0]] = 0
                 try:
                     durationRatio[durationList[i][0]][durationList[i][1]] = 1
@@ -118,19 +132,27 @@ for i in range(1,250):
                     track.append(Message('note_off', note=note, velocity=64, time=duration))
                     break
             break
+midiDrum = MidiFile("music/drum.mid")
+newMidi.tracks.append(midiDrum.tracks[0])
 
 
 newMidi.save('output.mid')
 
-s = converter.parse('output.mid')
 
-for p in s.parts:
-    p.insert(0, instrument.AcousticGuitar())
 
-s.write('midi', 'lel.mid')
+'''
+s = converter.parse(newMidi)
+
+for truc in s.parts:
+    if(message.type == "note_on" or message.type == "note_off" ):
+        print(truc.insert)
+        p.insert(0, instrument.ElectricGuitar())
+
+s.save('lel.mid')
+'''
 
 try:
-    play_music("lel.mid")
+    play_music("output.mid")
 except KeyboardInterrupt:
     # if user hits Ctrl/C then exit
     # (works only in console mode)
