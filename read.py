@@ -28,6 +28,53 @@ durationList = []
 durationRatio = {}
 durationHit = {}
 
+preset = {
+    "metalProg" : {
+        "tracks":  ["music/animal.mid"],
+        "tempo" : 350000,
+        "instrument" : 30,
+        "drum" : "music/drum.mid",
+    },
+    "metal" : {
+        "tracks":  ["music/redneck.mid"],
+        "tempo" : 380000,
+        "instrument" : 30,
+        "drum" : "music/drumMetal.mid",
+    },
+    "slayer" : {
+        "tracks":  ["music/slayer2.mid", "music/slayer.mid"],
+        "tempo" : 380000,
+        "instrument" : 30,
+        "drum" : "music/slayerDrum.mid",
+    },
+    "megalovania" : {
+        "tracks":  ["music/Undertale_-_Megalovania.mid"],
+        "tempo" : 350000,
+        "instrument" : 0,
+        "drum" : "music/empty.mid",
+    },
+    "mozart" : {
+        "tracks":  ["music/mozart1.mid","music/mozart2.mid","music/mozart3.mid","music/mozart4.mid","music/mozart5.mid","music/mozart6.mid"],
+        "tempo" : 550000,
+        "instrument" : 0,
+        "drum" : "music/empty.mid",
+    },
+    "bach" : {
+        "tracks":  ["music/bach.mid"],
+        "tempo" : 550000,
+        "instrument" : 0,
+        "drum" : "music/empty.mid",
+    },
+    "all" : {
+        "tracks":  ["music/animal.mid", "music/bach.mid", "music/bach_846.mid", "music/bpenta.mid", "music/B_Minor_Pentatonic_Exercises-TLMusicLessons.mid", "music/dragonforce.mid", "music/drum.mid", "music/drumMetal.mid", "music/empty.mid", "music/f1.mid", "music/f2.mid", "music/h-17-1.mid", "music/heis.mid", "music/heis2.mid", "music/kanker.mid", "music/lel.mid", "music/mozart1.mid", "music/mozart2.mid", "music/mozart3.mid", "music/output.mid", "music/penta.mid", "music/penta1.mid", "music/penta2.mid", "music/redneck.mid", "music/rolling.mid", "music/shamisen2.mid", "music/shamisen3.mid", "music/shamisen4.mid", "music/shamisen5.mid", "music/shred.mid", "music/slayer.mid", "music/slayer2.mid", "music/slayerDrum.mid", "music/smoke.mid", "music/test.mid", "music/test2.mid", "music/test3.mid", "music/test4.mid", "music/test5.mid", "music/Undertale_-_Megalovania.mid", "music/Zelda Ocarina of Time - Kakariko Village.mid", "music/Zelda Ocarina of Time - Lost Woods.mid", "music/Zelda Ocarina of Time - Market.mid"],
+        "tempo" : 450000,
+        "instrument" : 0,
+        "drum" : "music/empty.mid",
+    }
+
+
+}
+
 
 '''
 0=piano
@@ -38,18 +85,28 @@ durationHit = {}
 125=vocalist
 '''
 
+print(sys.argv[1])
 
 newMidi = MidiFile()
 track = MidiTrack()
-print(instrument)
-track.append(Message('program_change', program=30))
+
+track.append(Message('program_change', program=preset[sys.argv[1]]['instrument']))
 newMidi.tracks.append(track)
-tempo = 450000
+
+tempo = preset[sys.argv[1]]['tempo']
+
+midiDrum = MidiFile(preset[sys.argv[1]]['drum']).tracks[0]
+midiDrum.insert(3,MetaMessage('set_tempo', tempo=tempo))
+newMidi.tracks.append(midiDrum)
+
+for message in midiDrum:
+    print(message)
+
 print("TEMPO")
 print(mido.tempo2bpm(tempo))
 track.append(MetaMessage('set_tempo', tempo=tempo))
 
-fileList = ["music/animal.mid"]
+fileList = preset[sys.argv[1]]['tracks']
 
 for file in fileList:
     mid = MidiFile(file)
@@ -132,8 +189,6 @@ for i in range(1,250):
                     track.append(Message('note_off', note=note, velocity=64, time=duration))
                     break
             break
-midiDrum = MidiFile("music/drum.mid")
-newMidi.tracks.append(midiDrum.tracks[0])
 
 
 newMidi.save('output.mid')
