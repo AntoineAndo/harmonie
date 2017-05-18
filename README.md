@@ -9,7 +9,7 @@
 * PARE Raphaël
 * CREACH Matthias
 
-## Packages
+## Dependences
 
 ```
 mido
@@ -17,6 +17,23 @@ midiutil
 pygame
 music21
 ```
+
+## Utilisation
+
+Placer les fichiers midi d'apprentissage dans le dossier ```music``` puis lancer la commande
+
+```
+python read.py [preset]
+```
+
+[presets]
+* metalProg
+* metal
+* slayer
+* megalovania
+* mozart
+* bach
+* all
 
 
 ## Consignes
