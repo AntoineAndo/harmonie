@@ -75,49 +75,41 @@ preset = {
 
 }
 
-
-'''
-0=piano
-10=carillon
-5=guitar ?
-6=harp ?
-7=
-125=vocalist
-'''
-
-print(sys.argv[1])
-
 newMidi = MidiFile()
 track = MidiTrack()
 
+#Changement de l'instrument en fonction du preset
 track.append(Message('program_change', program=preset[sys.argv[1]]['instrument']))
 newMidi.tracks.append(track)
 
 tempo = preset[sys.argv[1]]['tempo']
 
+#Insertion de la batterie
 midiDrum = MidiFile(preset[sys.argv[1]]['drum']).tracks[0]
 midiDrum.insert(3,MetaMessage('set_tempo', tempo=tempo))
 newMidi.tracks.append(midiDrum)
 
-for message in midiDrum:
-    print(message)
-
 print("TEMPO")
 print(mido.tempo2bpm(tempo))
+
+#Definition du tempo
 track.append(MetaMessage('set_tempo', tempo=tempo))
 
 fileList = preset[sys.argv[1]]['tracks']
+
 
 for file in fileList:
     mid = MidiFile(file)
     for message in mid.tracks[0]:
         if(message.type == "note_on"):
+            #On enregistre dans deux tableaux la note jouée ainsi que sa durée
             notes.append([message.note, message.time])
             delayRatio.append([message.note, message.time])
             trackLength += 1
         if(message.type == "note_off"):
             durationList.append([message.note, message.time])
 
+    #On boucle sur ce tableau afin d'obtenir le nombre d'occurence de cette note ainsi que de ses durées
     for i, note in enumerate(durationList):
         try: 
             durationRatio[durationList[i][0]][durationList[i][1]] += 1
@@ -152,6 +144,8 @@ for i, note in enumerate(notes):
         print('end')
     hitRatio[notes[i][0]] += 1
 
+
+#On convertit le nombre d'occurences en pourcentages afin d'obtenir la fréquence
 for i, baseNumber in enumerate(dictRatio):
     for j, nextNumber in enumerate(dictRatio[baseNumber]):
         dictRatio[baseNumber][nextNumber] = dictRatio[baseNumber][nextNumber] / hitRatio[baseNumber] * 100
@@ -163,14 +157,17 @@ for i, duration in enumerate(durationRatio):
 rand = random.randint(0,100)
 count = 0
 previousNote = 0
-for i, truc in enumerate(hitRatio):
-    hitRatio[truc] = hitRatio[truc] / trackLength * 100
-    count += hitRatio[truc]
+#Génération d'une première note aléatoire en fonction de sa fréquence
+for i, note in enumerate(hitRatio):
+    hitRatio[note] = hitRatio[note] / trackLength * 100
+    count += hitRatio[note]
     if rand <= count:
-        previousNote = truc
-        track.append(Message('note_on', note=truc, velocity=64, time=0))
-        track.append(Message('note_off', note=truc, velocity=64, time=120))
+        previousNote = note
+        #Ajout de la note sous la forme de deux message midi à la track
+        track.append(Message('note_on', note=note, velocity=64, time=0))
+        track.append(Message('note_off', note=note, velocity=64, time=120))
 
+#Génération de la suite des notes en tenant compte de la note précédemment joué
 for i in range(1,250):
     randNote = random.randint(0,100)
     randDuration = random.randint(0,100)
@@ -185,12 +182,13 @@ for i in range(1,250):
                 ratio = durationRatio[note][duration]
                 countDuration += ratio
                 if randDuration <= countDuration:
+                    #Ajout de la note sous la forme de deux message midi à la track
                     track.append(Message('note_on', note=note, velocity=64, time=0))
                     track.append(Message('note_off', note=note, velocity=64, time=duration))
                     break
             break
 
-
+#Enregistrement du fichier midi
 newMidi.save('output.mid')
 
 
@@ -206,6 +204,8 @@ for truc in s.parts:
 s.save('lel.mid')
 '''
 
+
+#Lecture du fichier midi
 try:
     play_music("output.mid")
 except KeyboardInterrupt:
