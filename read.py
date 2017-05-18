@@ -134,7 +134,7 @@ for i, note in enumerate(notes):
         try:
             dictRatio[notes[i][0]][notes[i+1][0]] = 1
         except KeyError:
-            dictRatio[notes[i][0]] = {};
+            dictRatio[notes[i][0]] = {}
             hitRatio[notes[i][0]] = 0
             try:
                 dictRatio[notes[i][0]][notes[i+1][0]] = 1
